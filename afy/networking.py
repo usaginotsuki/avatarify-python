@@ -76,6 +76,8 @@ class SerializingSocket(zmq.Socket):
           copy: (optional) zmq copy flag.
           track: (optional) zmq track flag.
         """
+        log("send_data)
+        log(data)
 
         md = dict(msg=msg, )
         self.send_json(md, flags | zmq.SNDMORE)
@@ -97,13 +99,17 @@ class SerializingSocket(zmq.Socket):
           msg: image name or text message.
           A: numpy array or OpenCV image reconstructed with dtype and shape.
         """
-
+        log("receive_array")
+        log(A)
         md = self.recv_json(flags=flags)
         msg = self.recv(flags=flags, copy=copy, track=track)
         A = np.frombuffer(msg, dtype=md['dtype'])
         return (md['msg'], A.reshape(md['shape']))
 
     def recv_data(self, flags=0, copy=True, track=False):
+            
+        log("receive_data")
+        log(data)
         """Receives a jpg buffer and a text msg.
 
         Receives a jpg bytestring of an OpenCV image.
