@@ -4,8 +4,8 @@ import msgpack
 import msgpack_numpy as m
 m.patch()
 
-from afy.utils import log
-
+from afy.utils import info, Once, Tee, crop, pad_img, resize, TicToc, log
+log = Tee('./var/log/cam_fomm.log')
 
 def check_connection(socket, timeout=1000):
     old_rcvtimeo = socket.RCVTIMEO
