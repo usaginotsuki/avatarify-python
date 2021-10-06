@@ -102,7 +102,9 @@ class SerializingSocket(zmq.Socket):
   
         md = self.recv_json(flags=flags)
         msg = self.recv(flags=flags, copy=copy, track=track)
+        
         A = np.frombuffer(msg, dtype=md['dtype'])
+        log(A)
         return (md['msg'], A.reshape(md['shape']))
 
     def recv_data(self, flags=0, copy=True, track=False):
@@ -126,6 +128,7 @@ class SerializingSocket(zmq.Socket):
 
         md = self.recv_json(flags=flags)  # metadata text
         data = self.recv(flags=flags, copy=copy, track=track)
+        log(data)
         return (md['msg'], data)
 
 
