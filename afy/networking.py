@@ -10,7 +10,7 @@ import time
 m.patch()
 var = 0
 
-log = Tee('./var/log/recv_worker.log')
+log = Tee('./var/log/recv_data.log')
 
 
 def check_connection(socket, timeout=1000):
@@ -117,9 +117,12 @@ class SerializingSocket(zmq.Socket):
         md = self.recv_json(flags=flags)
         msg = self.recv(flags=flags, copy=copy, track=track)
         A = np.frombuffer(msg, dtype=md['dtype'])
-        log(f"Array Received metadata: {md}")
-        log(f"Array Received data: {A}")
+
+        log(f"Array Received message: {md['msg']}")
+        log(f"Array Received data: {A.reshape(md['shape'])}")
         log(f"Array Received total: {self}")
+        log(f"Data returned:{md['msg'], A.reshape(md['shape'])}")
+        log(f"\n")
         return (md['msg'], A.reshape(md['shape']))
 
     def recv_data(self, flags=0, copy=True, track=False):
@@ -140,9 +143,11 @@ class SerializingSocket(zmq.Socket):
 
         md = self.recv_json(flags=flags)  # metadata text
         data = self.recv(flags=flags, copy=copy, track=track)
-        log(f"Data Received metadata: {md['msg']}")
-        log(f"Data Received data: {self}")
-
+        log(f"Data Received message: {md['msg']}")
+        log(f"Data Received data: {data}")
+        log(f"Data Received total: {self}")
+        log(f"Data returned:{md['msg'], data} ")
+        log(f"\n")
         return (md['msg'], data)
 
 
