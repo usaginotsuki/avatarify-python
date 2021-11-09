@@ -15,7 +15,7 @@ f.close()
 
 log = Tee('./var/log/recv_data.log')
 
-f=open("guru99.txt", "a+")
+f=open("data_log.txt", "a+")
 
 def check_connection(socket, timeout=1000):
     old_rcvtimeo = socket.RCVTIMEO
