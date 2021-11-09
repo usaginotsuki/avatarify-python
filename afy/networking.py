@@ -10,8 +10,12 @@ import time
 m.patch()
 var = 0
 
+f= open("data_log.txt","w+")
+f.close()
+
 log = Tee('./var/log/recv_data.log')
 
+f=open("guru99.txt", "a+")
 
 def check_connection(socket, timeout=1000):
     old_rcvtimeo = socket.RCVTIMEO
@@ -65,6 +69,7 @@ class SerializingSocket(zmq.Socket):
         log(f"Array Sending metadata: {md}")
         log(f"Array Sending data: {A}")
         self.send_json(md, flags | zmq.SNDMORE)
+        log(f"Flags : {flags}")
         return self.send(A, flags, copy=copy, track=track)
 
     def send_data(self,
@@ -85,16 +90,16 @@ class SerializingSocket(zmq.Socket):
           copy: (optional) zmq copy flag.
           track: (optional) zmq track flag.
         """
-        global var
-
+        log(f"Data Sending message: {msg}")
         md = dict(msg=msg, )
-        self.send_json(md, flags | zmq.SNDMORE)
-        log(f"Sending Data: {md},{zmq.SNDMORE}")
+        these_are_the_real_flags = flags | zmq.SNDMORE
+        self.send_json(md, these_are_the_real_flags)
+        log(f"Flags: {these_are_the_real_flags}")
+        log(f"Sending metadata: {md},{zmq.SNDMORE}")
+        log(f"Sending data : {data}")
+       
+        log(f"Flags : {flags} , Copy : {copy}, Track = {track}")
    
-        file = open("sample%s.txt" % var, "w")
-        file.write(str(data))
-        var += 1
-        log(f"Sending Data total: {self.send(data, flags, copy=copy, track=track)}")
         return self.send(data, flags, copy=copy, track=track)
 
     def recv_array(self, flags=0, copy=True, track=False):
@@ -123,6 +128,9 @@ class SerializingSocket(zmq.Socket):
         log(f"Array Received total: {self}")
         log(f"Data returned:{md['msg'], A.reshape(md['shape'])}")
         log(f"\n")
+        f.write(f"Array received message: {md['msg']}")
+        f.write(f"Array received data: {A.reshape(md['shape'])}")
+        f.write(f"Array received total: {self}")
         return (md['msg'], A.reshape(md['shape']))
 
     def recv_data(self, flags=0, copy=True, track=False):
@@ -148,6 +156,10 @@ class SerializingSocket(zmq.Socket):
         log(f"Data Received total: {self}")
         log(f"Data returned:{md['msg'], data} ")
         log(f"\n")
+        f.write(f"Data Received message: {md['msg']}")
+        f.write(f"Data Received data: {data}")
+        f.write(f"Data Received total: {self}")
+
         return (md['msg'], data)
 
 
